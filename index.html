@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProbaLearn</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2236;--card:#151e30;--border:#1f2d45;--accent:#4fffb0;--accent2:#38bdf8;--accent3:#f472b6;--gold:#fbbf24;--text:#e8edf5;--muted:#7a8faa;--easy:#4fffb0;--medium:#fbbf24;--hard:#f87171;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(10,14,26,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;}.logo span{color:var(--accent);}
+.nav-tabs{display:flex;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:4px;}
+.nav-tab{padding:7px 13px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.nav-tab.active{background:var(--accent);color:#0a0e1a;font-weight:700;}.nav-tab:hover:not(.active){color:var(--text);}
+.nav-badge{background:var(--accent3);color:white;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;}
+.page{display:none;padding:36px;max-width:1100px;margin:0 auto;}.page.active{display:block;animation:fadeUp 0.4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hero{text-align:center;padding:56px 20px 44px;}
+.hero-tag{display:inline-block;background:rgba(79,255,176,0.12);border:1px solid rgba(79,255,176,0.3);color:var(--accent);font-size:0.76rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:22px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:18px;letter-spacing:-1px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted);font-family:'Lora',serif;font-size:1rem;max-width:500px;margin:0 auto 36px;line-height:1.85;}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;}
+.stat{text-align:center;}.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);display:block;}.stat-label{color:var(--muted);font-size:0.82rem;}
+.section-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px;}
+.section-sub{color:var(--muted);margin-bottom:24px;font-size:0.9rem;}
+.chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-bottom:40px;}
+.chapter-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.chapter-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
+.chapter-card.green::before{background:var(--easy);}.chapter-card.blue::before{background:var(--accent2);}.chapter-card.pink::before{background:var(--accent3);}.chapter-card.gold::before{background:var(--gold);}
+.chapter-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 36px rgba(79,255,176,0.08);}
+.chapter-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:14px;}
+.chapter-icon.green{background:rgba(79,255,176,0.12);}.chapter-icon.blue{background:rgba(56,189,248,0.12);}.chapter-icon.pink{background:rgba(244,114,182,0.12);}.chapter-icon.gold{background:rgba(251,191,36,0.12);}
+.chapter-card h3{font-family:'Syne',sans-serif;font-size:0.97rem;font-weight:700;margin-bottom:6px;}
+.chapter-card p{color:var(--muted);font-size:0.84rem;line-height:1.6;margin-bottom:14px;}
+.chapter-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.badge{font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:20px;}
+.badge.easy{background:rgba(79,255,176,0.15);color:var(--easy);}.badge.medium{background:rgba(251,191,36,0.15);color:var(--gold);}.badge.hard{background:rgba(248,113,113,0.15);color:var(--hard);}.badge.lessons{background:rgba(255,255,255,0.07);color:var(--muted);}
+.lesson-view{display:none;}.lesson-view.active{display:block;animation:fadeUp 0.3s ease;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:0.86rem;cursor:pointer;margin-bottom:24px;transition:color 0.2s;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.back-btn:hover{color:var(--accent);}
+.lesson-header{margin-bottom:28px;}.lesson-header h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:6px;}
+.lesson-body{display:grid;grid-template-columns:1fr 390px;gap:22px;align-items:start;}
+.course-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;}
+.course-box h3{font-family:'Syne',sans-serif;font-size:0.97rem;font-weight:700;margin-top:26px;margin-bottom:10px;color:var(--accent2);padding-bottom:7px;border-bottom:1px solid var(--border);}
+.course-box h3:first-child{margin-top:0;}
+.course-box p{font-family:'Lora',serif;color:#c5d1e2;line-height:1.95;margin-bottom:13px;font-size:0.95rem;}
+.course-box ul{margin:8px 0 13px 18px;font-family:'Lora',serif;color:#c5d1e2;font-size:0.95rem;line-height:1.9;}
+.course-box li{margin-bottom:7px;}
+.fblock{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;margin:14px 0;font-family:'Courier New',monospace;font-size:0.88rem;color:var(--accent);line-height:1.9;white-space:pre-line;}
+.exblock{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:16px 18px;margin:14px 0;}
+.exblock .elabel{font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent2);margin-bottom:8px;display:block;}
+.exblock p{font-family:'Lora',serif;color:var(--text);font-size:0.91rem;line-height:1.85;margin-bottom:6px;}.exblock p:last-child{margin-bottom:0;}
+.nblock{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:13px 16px;margin:12px 0;}
+.nblock p{font-family:'Lora',serif;color:#d4b86a;font-size:0.87rem;line-height:1.85;margin:0;}.nblock p::before{content:"💡 ";}
+.exercises-panel{display:flex;flex-direction:column;gap:12px;}
+.ep-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px;font-size:0.97rem;color:var(--accent2);}
+.ex-card{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;transition:border-color 0.2s;}
+.ex-card:hover{border-color:rgba(79,255,176,0.3);}
+.ex-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.ex-header-left{display:flex;align-items:center;gap:10px;}
+.ex-num{width:26px;height:26px;border-radius:7px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:0.76rem;font-weight:700;color:var(--muted);flex-shrink:0;}
+.ex-title{font-size:0.88rem;font-weight:500;}
+.ex-toggle{color:var(--muted);font-size:1rem;transition:transform 0.2s;flex-shrink:0;}.ex-card.open .ex-toggle{transform:rotate(180deg);}
+.ex-body{display:none;padding:0 18px 18px;}.ex-card.open .ex-body{display:block;animation:fadeUp 0.2s ease;}
+.ex-question{font-family:'Lora',serif;color:var(--text);font-size:0.93rem;line-height:1.9;margin-bottom:13px;padding:14px;background:var(--bg3);border-radius:10px;}
+.show-ans-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(79,255,176,0.1);border:1px solid rgba(79,255,176,0.3);color:var(--accent);border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.show-ans-btn:hover{background:rgba(79,255,176,0.2);}
+.ans-block{display:none;margin-top:12px;background:rgba(79,255,176,0.04);border:1px solid rgba(79,255,176,0.12);border-radius:10px;padding:18px;}
+.ans-block.visible{display:block;animation:fadeUp 0.2s ease;}
+.ans-label{font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:block;}
+.ans-block p{font-family:'Lora',serif;font-size:0.9rem;color:#c5d1e2;line-height:1.9;margin-bottom:9px;}.ans-block p:last-child{margin-bottom:0;}
+.step{font-family:'DM Sans',sans-serif;font-size:0.74rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--accent2);margin:13px 0 6px;display:block;}.step:first-child{margin-top:0;}
+.ans-block .fblock{font-size:0.84rem;margin:7px 0;}
+.concl{background:rgba(79,255,176,0.08);border:1px solid rgba(79,255,176,0.2);border-radius:8px;padding:11px 15px;margin-top:10px;font-family:'DM Sans',sans-serif;font-size:0.87rem;color:var(--accent);font-weight:500;line-height:1.6;}
+.filter-row{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.81rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(79,255,176,0.08);}
+.quiz-container{max-width:680px;margin:0 auto;}
+.quiz-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.pbwrap{flex:1;height:5px;background:var(--bg3);border-radius:10px;margin:0 18px;overflow:hidden;}
+.pbfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px;transition:width 0.4s ease;}
+.qctr{font-family:'Syne',sans-serif;font-weight:700;color:var(--muted);font-size:0.88rem;white-space:nowrap;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;margin-bottom:18px;}
+.quiz-q{font-family:'Lora',serif;font-size:1.05rem;font-weight:500;line-height:1.75;margin-bottom:22px;}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;}
+.qopt{padding:13px 18px;border-radius:11px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.9rem;cursor:pointer;transition:all 0.2s;text-align:left;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:11px;}
+.qopt:hover:not(:disabled){border-color:var(--accent);background:rgba(79,255,176,0.07);}
+.qopt.correct{border-color:var(--easy);background:rgba(79,255,176,0.12);color:var(--easy);}
+.qopt.wrong{border-color:var(--hard);background:rgba(248,113,113,0.08);color:var(--hard);}
+.qopt:disabled{cursor:default;}
+.oletter{width:25px;height:25px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:0.73rem;font-weight:700;flex-shrink:0;}
+.qfb{padding:14px 18px;border-radius:11px;font-size:0.87rem;line-height:1.65;margin-top:14px;display:none;font-family:'Lora',serif;}
+.qfb.correct{background:rgba(79,255,176,0.08);border:1px solid rgba(79,255,176,0.2);color:var(--easy);}
+.qfb.wrong{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--hard);}
+.qfb.visible{display:block;animation:fadeUp 0.2s ease;}
+.qnext{display:none;width:100%;padding:13px;border-radius:11px;border:none;background:var(--accent);color:#0a0e1a;font-family:'Syne',sans-serif;font-size:0.93rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;margin-top:10px;}
+.qnext:hover{opacity:0.9;}.qnext.visible{display:block;animation:fadeUp 0.2s ease;}
+.qresult{text-align:center;padding:40px 20px;display:none;}.qresult.visible{display:block;animation:fadeUp 0.4s ease;}
+.rscore{font-family:'Syne',sans-serif;font-size:5rem;font-weight:800;color:var(--accent);line-height:1;margin-bottom:10px;}
+.rmsg{font-size:1rem;color:var(--muted);margin-bottom:28px;font-family:'Lora',serif;}
+.rbtn{padding:11px 30px;border-radius:11px;background:var(--accent);color:#0a0e1a;font-family:'Syne',sans-serif;font-weight:700;border:none;cursor:pointer;font-size:0.92rem;}
+.soon-wrap{max-width:580px;margin:60px auto;text-align:center;}
+.soon-icon{font-size:3.8rem;margin-bottom:22px;display:block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.soon-title{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;margin-bottom:12px;}
+.soon-title span{background:linear-gradient(135deg,var(--gold),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.soon-desc{color:var(--muted);line-height:1.85;font-size:0.93rem;margin-bottom:32px;font-family:'Lora',serif;}
+.soon-list{display:flex;flex-direction:column;gap:11px;margin-bottom:32px;text-align:left;}
+.soon-item{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.soon-ico{width:34px;height:34px;border-radius:9px;background:rgba(251,191,36,0.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.soon-item strong{display:block;color:var(--text);font-weight:600;margin-bottom:1px;font-size:0.88rem;}
+.soon-item span{color:var(--muted);font-size:0.8rem;}
+.soon-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:var(--gold);font-size:0.76rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 18px;border-radius:20px;}
+@media(max-width:768px){
+  nav{padding:12px 14px;}.page{padding:18px 14px;}
+  .lesson-body{grid-template-columns:1fr;}.hero h1{font-size:1.9rem;}.nav-tabs{display:none;}
+  .mobile-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;padding:5px;}
+  .mnbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;background:none;border:none;color:var(--muted);font-size:0.6rem;font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:9px;transition:all 0.2s;}
+  .mnbtn.active{color:var(--accent);background:rgba(79,255,176,0.08);}.mnbtn span:first-child{font-size:1.05rem;}
+  body{padding-bottom:76px;}.course-box{padding:18px;}
+}
+@media(min-width:769px){.mobile-nav{display:none;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Proba<span>Learn</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">Accueil</button>
+    <button class="nav-tab" onclick="showPage('cours')">Cours</button>
+    <button class="nav-tab" onclick="showPage('exercices')">Exercices</button>
+    <button class="nav-tab" onclick="showPage('quiz')">Quiz</button>
+    <button class="nav-tab" onclick="showPage('epreuves')">Epreuves</button>
+  </div>
+  <span class="nav-badge">BETA GRATUITE</span>
+</nav>
+<div class="mobile-nav">
+  <button class="mnbtn active" onclick="showPage('home')"><span>🏠</span>Accueil</button>
+  <button class="mnbtn" onclick="showPage('cours')"><span>📚</span>Cours</button>
+  <button class="mnbtn" onclick="showPage('exercices')"><span>✏️</span>Exos</button>
+  <button class="mnbtn" onclick="showPage('quiz')"><span>⚡</span>Quiz</button>
+  <button class="mnbtn" onclick="showPage('epreuves')"><span>📄</span>Epreuves</button>
+</div>
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">Plateforme d'apprentissage</div>
+    <h1>Maitrise les<br><em>Probabilites</em><br>pas a pas</h1>
+    <p>Cours detailles, exercices rigoureux avec corrigescomplets. Du debutant au niveau avance.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Chapitres</span></div>
+      <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Exercices</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">Niveaux</span></div>
+    </div>
+  </div>
+  <div class="section-title">Chapitres disponibles</div>
+  <div class="section-sub">Clique sur un chapitre pour acceder au cours et aux exercices</div>
+  <div class="chapters-grid">
+    <div class="chapter-card green" onclick="openLesson(0)"><div class="chapter-icon green">🎲</div><h3>Bases des Probabilites</h3><p>Univers omega, evenements, probabilite classique, proprietes fondamentales.</p><div class="chapter-meta"><span class="badge easy">Debutant</span><span class="badge lessons">5 exercices</span></div></div>
+    <div class="chapter-card blue" onclick="openLesson(1)"><div class="chapter-icon blue">🔗</div><h3>Probabilites Conditionnelles</h3><p>P(A|B), independance, formule de Bayes, probabilites totales.</p><div class="chapter-meta"><span class="badge medium">Intermediaire</span><span class="badge lessons">5 exercices</span></div></div>
+    <div class="chapter-card pink" onclick="openLesson(2)"><div class="chapter-icon pink">📊</div><h3>Variables Aleatoires Discretes</h3><p>Loi de probabilite, esperance, variance, lois binomiale et de Poisson.</p><div class="chapter-meta"><span class="badge medium">Intermediaire</span><span class="badge lessons">5 exercices</span></div></div>
+    <div class="chapter-card gold" onclick="openLesson(3)"><div class="chapter-icon gold">📈</div><h3>Variables Aleatoires Continues</h3><p>Densite, loi uniforme, loi normale, loi exponentielle.</p><div class="chapter-meta"><span class="badge hard">Avance</span><span class="badge lessons">5 exercices</span></div></div>
+  </div>
+</div>
+<div class="page" id="page-cours">
+  <div id="cours-list">
+    <div class="section-title">Tous les cours</div>
+    <div class="section-sub">Selectionne un chapitre pour commencer</div>
+    <div class="chapters-grid">
+      <div class="chapter-card green" onclick="openLesson(0)"><div class="chapter-icon green">🎲</div><h3>Bases des Probabilites</h3><p>Univers, evenements, probabilite classique.</p><div class="chapter-meta"><span class="badge easy">Debutant</span></div></div>
+      <div class="chapter-card blue" onclick="openLesson(1)"><div class="chapter-icon blue">🔗</div><h3>Probabilites Conditionnelles</h3><p>P(A|B), independance, Bayes.</p><div class="chapter-meta"><span class="badge medium">Intermediaire</span></div></div>
+      <div class="chapter-card pink" onclick="openLesson(2)"><div class="chapter-icon pink">📊</div><h3>Variables Aleatoires Discretes</h3><p>Esperance, variance, lois usuelles.</p><div class="chapter-meta"><span class="badge medium">Intermediaire</span></div></div>
+      <div class="chapter-card gold" onclick="openLesson(3)"><div class="chapter-icon gold">📈</div><h3>Variables Aleatoires Continues</h3><p>Densite, loi normale, exponentielle.</p><div class="chapter-meta"><span class="badge hard">Avance</span></div></div>
+    </div>
+  </div>
+  <div class="lesson-view" id="lesson-view">
+    <button class="back-btn" onclick="closeLesson()">← Retour aux chapitres</button>
+    <div class="lesson-header"><h2 id="lesson-title"></h2><div id="lesson-badge"></div></div>
+    <div class="lesson-body">
+      <div class="course-box" id="lesson-content"></div>
+      <div class="exercises-panel" id="lesson-exercises"></div>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-exercices">
+  <div class="section-title">Tous les exercices</div>
+  <div class="section-sub">Filtre par niveau de difficulte</div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterExos('all',this)">Tous</button>
+    <button class="filter-btn" onclick="filterExos('easy',this)">🟢 Debutant</button>
+    <button class="filter-btn" onclick="filterExos('medium',this)">🟡 Intermediaire</button>
+    <button class="filter-btn" onclick="filterExos('hard',this)">🔴 Avance</button>
+  </div>
+  <div class="exercises-panel" id="all-exercises"></div>
+</div>
+<div class="page" id="page-quiz">
+  <div class="quiz-container">
+    <div class="section-title">Quiz rapide ⚡</div>
+    <div class="section-sub">Teste tes connaissances</div>
+    <div id="quiz-main">
+      <div class="quiz-hdr">
+        <span class="qctr" id="qctr">1 / 6</span>
+        <div class="pbwrap"><div class="pbfill" id="pbfill" style="width:16%"></div></div>
+      </div>
+      <div class="quiz-card">
+        <div id="qlvl"></div>
+        <div class="quiz-q" id="quiz-q"></div>
+        <div class="quiz-opts" id="quiz-opts"></div>
+        <div class="qfb" id="qfb"></div>
+        <button class="qnext" id="qnext" onclick="nextQ()">Question suivante</button>
+      </div>
+    </div>
+    <div class="qresult" id="qresult">
+      <div class="rscore" id="rscore">0/6</div>
+      <div class="rmsg" id="rmsg"></div>
+      <button class="rbtn" onclick="restartQ()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-epreuves">
+  <div class="soon-wrap">
+    <span class="soon-icon">📄</span>
+    <div class="soon-title">Epreuves <span>Bientot disponibles</span></div>
+    <p class="soon-desc">Cette rubrique contiendra des partiels et examens passes de probabilites, telechargeables en PDF et Word, avec leurs corriges detailles.</p>
+    <div class="soon-list">
+      <div class="soon-item"><div class="soon-ico">📝</div><div><strong>Partiels et examens passes</strong><span>Sujets reels avec tous les exercices d'origine</span></div></div>
+      <div class="soon-item"><div class="soon-ico">✅</div><div><strong>Corriges detailles etape par etape</strong><span>Chaque solution expliquee rigoureusement</span></div></div>
+      <div class="soon-item"><div class="soon-ico">⬇️</div><div><strong>Telechargement PDF et Word</strong><span>Pour reviser hors ligne a ton rythme</span></div></div>
+      <div class="soon-item"><div class="soon-ico">🔒</div><div><strong>Acces Premium</strong><span>Disponible avec l'abonnement mensuel</span></div></div>
+    </div>
+    <span class="soon-badge">⏳ Disponible tres bientot</span>
+  </div>
+</div>
+<script>
+const L=[
+{title:"Bases des Probabilites",badge:'<span class="badge easy">Debutant</span>',
+content:`<h3>1. Pourquoi les probabilites ?</h3>
+<p>Dans la vie reelle, beaucoup de phenomenes sont incertains. Les probabilites permettent de <strong style="color:var(--text)">mesurer et quantifier cette incertitude</strong> de facon rigoureuse.</p>
+<h3>2. L'univers Omega</h3>
+<p>Avant tout calcul, on definit toujours <strong style="color:var(--text)">l'univers Omega</strong> : l'ensemble de tous les resultats possibles de l'experience aleatoire.</p>
+<div class="fblock">Omega = { tous les resultats possibles }</div>
+<div class="exblock"><span class="elabel">Exemples</span>
+<p>- Lancer un de : Omega = {1, 2, 3, 4, 5, 6}</p>
+<p>- Lancer une piece : Omega = {Pile, Face}</p>
+<p>- Tirer une carte dans 52 : Omega = {les 52 cartes}</p></div>
+<h3>3. Les evenements</h3>
+<p>Un <strong style="color:var(--text)">evenement A</strong> est un sous-ensemble de Omega. Il represente un ensemble de resultats qui nous interesse.</p>
+<div class="exblock"><span class="elabel">Exemple</span>
+<p>Pour un de, A = "obtenir un nombre pair" => A = {2, 4, 6}.</p></div>
+<div class="nblock"><p>L'evenement certain est Omega (se realise toujours). L'evenement impossible est l'ensemble vide (ne se realise jamais).</p></div>
+<h3>4. La probabilite P</h3>
+<p>On definit ensuite une <strong style="color:var(--text)">mesure de probabilite P</strong> sur Omega. Si tous les resultats sont equiprobables :</p>
+<div class="fblock">P(A) = |A| / |Omega|
+     = Nbre de resultats favorables / Nbre total</div>
+<h3>5. Proprietes fondamentales</h3>
+<ul>
+<li><strong style="color:var(--text)">Positivite :</strong> 0 <= P(A) <= 1</li>
+<li><strong style="color:var(--text)">Normalisation :</strong> P(Omega) = 1 et P(vide) = 0</li>
+<li><strong style="color:var(--text)">Complementaire :</strong> P(barre-A) = 1 - P(A)</li>
+<li><strong style="color:var(--text)">Union :</strong> P(A union B) = P(A) + P(B) - P(A inter B)</li>
+</ul>
+<div class="nblock"><p>On soustrait P(A inter B) dans l'union pour eviter de compter deux fois les resultats communs a A et B.</p></div>`,
+exercises:[
+{level:"easy",title:"Lancer d'une piece deux fois",
+question:"On lance une piece equilibree deux fois. (1) Definir l'univers Omega. (2) Definir la probabilite P sur Omega. (3) Soit A = 'obtenir exactement une face'. Calculer P(A).",
+answer:`<span class="step">Etape 1 - Definir l'univers Omega</span>
+<p>On note P=Pile et F=Face. On liste tous les couples possibles :</p>
+<div class="fblock">Omega = { (P,P), (P,F), (F,P), (F,F) }
+|Omega| = 4 resultats</div>
+<span class="step">Etape 2 - Definir la probabilite P</span>
+<p>La piece est equilibree, donc chaque resultat a la meme chance. On pose la probabilite uniforme :</p>
+<div class="fblock">P({omega}) = 1/4  pour tout omega dans Omega</div>
+<span class="step">Etape 3 - Identifier l'evenement A</span>
+<p>A = "exactement une face" = les resultats avec un seul F :</p>
+<div class="fblock">A = { (P,F), (F,P) }  =>  |A| = 2</div>
+<span class="step">Etape 4 - Calculer P(A)</span>
+<div class="fblock">P(A) = |A| / |Omega| = 2/4 = 1/2</div>
+<div class="concl">✅ P(A) = 1/2 = 50%. Il y a 50% de chances d'obtenir exactement une face sur deux lancers.</div>`},
+{level:"easy",title:"Tirage d'une carte",
+question:"On tire une carte au hasard dans un jeu de 52 cartes. (1) Definir Omega. (2) Definir P. (3) Soit A = 'tirer un As'. Calculer P(A).",
+answer:`<span class="step">Etape 1 - Definir l'univers Omega</span>
+<div class="fblock">Omega = { toutes les 52 cartes du jeu }
+|Omega| = 52</div>
+<span class="step">Etape 2 - Definir la probabilite P</span>
+<p>Le tirage est equitable : chaque carte a la meme chance d'etre choisie.</p>
+<div class="fblock">P({carte}) = 1/52  pour chaque carte</div>
+<span class="step">Etape 3 - Identifier l'evenement A</span>
+<p>Un jeu contient 4 As (coeur, carreau, trefle, pique) :</p>
+<div class="fblock">A = { As-coeur, As-carreau, As-trefle, As-pique }
+|A| = 4</div>
+<span class="step">Etape 4 - Calculer P(A)</span>
+<div class="fblock">P(A) = |A| / |Omega| = 4/52 = 1/13 ≈ 0,077</div>
+<div class="concl">✅ P(As) = 1/13 ≈ 7,7%. C'est une faible probabilite car les As sont rares (4 sur 52).</div>`},
+{level:"medium",title:"Union d'evenements",
+question:"P(A) = 0,4 ; P(B) = 0,3 ; P(A inter B) = 0,1. Calculer P(A union B) en justifiant la formule utilisee.",
+answer:`<span class="step">Rappel - Pourquoi cette formule ?</span>
+<p>P(A union B) represente la probabilite que A ou B se realise. Si on additionne P(A)+P(B) directement, on compte deux fois les resultats dans A inter B. Il faut les soustraire :</p>
+<div class="fblock">P(A union B) = P(A) + P(B) - P(A inter B)</div>
+<span class="step">Application numerique</span>
+<div class="fblock">P(A union B) = 0,4 + 0,3 - 0,1 = 0,6</div>
+<span class="step">Verification de coherence</span>
+<p>On verifie : 0 <= 0,6 <= 1 ✓ et 0,6 >= max(0,4 ; 0,3) ✓</p>
+<div class="concl">✅ P(A union B) = 0,6 = 60%. L'evenement "A ou B" se realise avec 60% de chances.</div>`},
+{level:"medium",title:"Evenement complementaire",
+question:"La probabilite qu'il pleuve demain est P(A) = 0,35. Calculer P(complementaire de A) et justifier.",
+answer:`<span class="step">Definition du complementaire</span>
+<p>barre-A = "il ne pleut pas demain". A et barre-A sont complementaires : mutuellement exclusifs et exhaustifs. Donc :</p>
+<div class="fblock">P(A) + P(barre-A) = P(Omega) = 1</div>
+<span class="step">Calcul</span>
+<div class="fblock">P(barre-A) = 1 - P(A) = 1 - 0,35 = 0,65</div>
+<div class="concl">✅ P(pas de pluie) = 0,65 = 65%. Le complementaire est souvent plus facile a calculer que l'evenement lui-meme.</div>`},
+{level:"hard",title:"De - union et intersection",
+question:"On lance un de equilibre. Soit A = 'multiple de 2' et B = 'multiple de 3'. Definir Omega et P, puis calculer P(A), P(B), P(A inter B) et P(A union B).",
+answer:`<span class="step">Etape 1 - Definir Omega et P</span>
+<div class="fblock">Omega = {1, 2, 3, 4, 5, 6}  =>  |Omega| = 6
+P({k}) = 1/6  pour tout k dans Omega  (de equilibre)</div>
+<span class="step">Etape 2 - Identifier les evenements</span>
+<div class="fblock">A = multiples de 2 = {2, 4, 6}  =>  |A| = 3
+B = multiples de 3 = {3, 6}    =>  |B| = 2</div>
+<span class="step">Etape 3 - Calculer P(A) et P(B)</span>
+<div class="fblock">P(A) = 3/6 = 1/2
+P(B) = 2/6 = 1/3</div>
+<span class="step">Etape 4 - Trouver A inter B</span>
+<p>A inter B = multiples de 2 ET de 3 = multiples de 6 :</p>
+<div class="fblock">A inter B = {6}  =>  P(A inter B) = 1/6</div>
+<span class="step">Etape 5 - Calculer P(A union B)</span>
+<div class="fblock">P(A union B) = 1/2 + 1/3 - 1/6
+             = 3/6 + 2/6 - 1/6 = 4/6 = 2/3</div>
+<div class="concl">✅ P(A union B) = 2/3 ≈ 66,7%. Deux chances sur trois d'obtenir un multiple de 2 ou de 3.</div>`}
+]},
+{title:"Probabilites Conditionnelles",badge:'<span class="badge medium">Intermediaire</span>',
+content:`<h3>1. Pourquoi conditionner ?</h3>
+<p>Parfois on dispose d'une <strong style="color:var(--text)">information partielle</strong> sur le resultat. Cette information restreint l'univers des possibles et modifie nos calculs.</p>
+<h3>2. Definition de P(A|B)</h3>
+<p>La <strong style="color:var(--text)">probabilite de A sachant B</strong>, notee P(A|B), se definit par :</p>
+<div class="fblock">P(A|B) = P(A inter B) / P(B)   avec P(B) > 0</div>
+<p>On "restreint l'univers a B" : sachant que B est realise, on ne travaille plus que dans B.</p>
+<div class="nblock"><p>Attention : P(A|B) est different de P(B|A) en general ! Ce sont deux quantites differentes.</p></div>
+<h3>3. Independance</h3>
+<p>A et B sont <strong style="color:var(--text)">independants</strong> si la realisation de l'un n'influence pas l'autre :</p>
+<div class="fblock">A et B independants  <=>  P(A inter B) = P(A) x P(B)
+Ce qui entraine :  P(A|B) = P(A)</div>
+<h3>4. Probabilites totales</h3>
+<p>Si B1, ..., Bn forment une <strong style="color:var(--text)">partition de Omega</strong> :</p>
+<div class="fblock">P(A) = somme-i P(A|Bi) x P(Bi)</div>
+<div class="nblock"><p>Ce theoreme decompose P(A) en passant par des cas intermediaires plus simples.</p></div>
+<h3>5. Formule de Bayes</h3>
+<p>Permet d'<strong style="color:var(--text)">inverser une probabilite conditionnelle</strong> :</p>
+<div class="fblock">P(B|A) = P(A|B) x P(B) / P(A)</div>
+<div class="nblock"><p>Bayes est fondamental en medecine et en intelligence artificielle : il permet de mettre a jour nos croyances a la lumiere d'une nouvelle information.</p></div>`,
+exercises:[
+{level:"easy",title:"Calcul de probabilite conditionnelle",
+question:"P(A) = 0,5 ; P(B) = 0,4 ; P(A inter B) = 0,2. Calculer P(A|B) et P(B|A). Ces evenements sont-ils independants ?",
+answer:`<span class="step">Etape 1 - Poser le cadre</span>
+<p>On travaille dans un espace (Omega, A, P). On nous donne directement P(A), P(B) et P(A inter B).</p>
+<span class="step">Etape 2 - Calculer P(A|B)</span>
+<p>On restreint l'univers a B. On cherche la proportion de A dans B :</p>
+<div class="fblock">P(A|B) = P(A inter B) / P(B) = 0,2 / 0,4 = 0,5</div>
+<span class="step">Etape 3 - Calculer P(B|A)</span>
+<div class="fblock">P(B|A) = P(A inter B) / P(A) = 0,2 / 0,5 = 0,4</div>
+<span class="step">Etape 4 - Tester l'independance</span>
+<div class="fblock">P(A) x P(B) = 0,5 x 0,4 = 0,2 = P(A inter B) ✓</div>
+<div class="concl">✅ A et B sont independants. On le confirme : P(A|B) = 0,5 = P(A), donc savoir que B est realise ne change rien a la probabilite de A.</div>`},
+{level:"easy",title:"Test d'independance",
+question:"P(A) = 0,3 ; P(B) = 0,4 ; P(A inter B) = 0,15. A et B sont-ils independants ?",
+answer:`<span class="step">Etape 1 - Rappeler le critere</span>
+<p>A et B sont independants si et seulement si P(A inter B) = P(A) x P(B).</p>
+<span class="step">Etape 2 - Verifier</span>
+<div class="fblock">P(A) x P(B) = 0,3 x 0,4 = 0,12
+P(A inter B) = 0,15
+0,12 est different de 0,15 => NON independants</div>
+<span class="step">Etape 3 - Interpreter</span>
+<p>P(A|B) = 0,15/0,4 = 0,375, qui est different de P(A) = 0,3 : savoir que B est realise augmente la probabilite de A.</p>
+<div class="concl">✅ A et B ne sont pas independants. La realisation de B influence celle de A.</div>`},
+{level:"medium",title:"Theoreme de Bayes - test medical",
+question:"Une maladie touche 1% de la population. Un test est positif a 99% si malade, et a 5% si sain. Sachant que le test est positif, calculer P(malade).",
+answer:`<span class="step">Etape 1 - Definir Omega et les evenements</span>
+<p>Omega = ensemble de tous les patients. On pose :</p>
+<div class="fblock">M  = "etre malade"   =>  P(M)  = 0,01
+barre-M = "etre sain" =>  P(barre-M) = 0,99
+T  = "test positif"
+P(T|M)  = 0,99   (sensibilite)
+P(T|barre-M) = 0,05  (faux positifs)</div>
+<span class="step">Etape 2 - Calculer P(T) par probabilites totales</span>
+<p>{M, barre-M} est une partition de Omega :</p>
+<div class="fblock">P(T) = P(T|M) x P(M) + P(T|barre-M) x P(barre-M)
+     = 0,99x0,01 + 0,05x0,99
+     = 0,0099 + 0,0495 = 0,0594</div>
+<span class="step">Etape 3 - Appliquer Bayes</span>
+<div class="fblock">P(M|T) = P(T|M) x P(M) / P(T)
+       = (0,99 x 0,01) / 0,0594
+       = 0,0099 / 0,0594 ≈ 0,167</div>
+<div class="concl">✅ P(M|T) ≈ 16,7%. Meme avec un test positif, seulement 1 patient sur 6 est reellement malade ! C'est le paradoxe de Bayes : la rarete de la maladie (1%) ecrase la performance du test.</div>`},
+{level:"medium",title:"Urnes - probabilites totales",
+question:"Urne A : 3 rouges, 2 bleues. Urne B : 1 rouge, 4 bleues. On choisit une urne au hasard puis on tire une boule. Calculer P(rouge).",
+answer:`<span class="step">Etape 1 - Definir la partition</span>
+<p>Choisir l'urne A ou B forme une partition de l'univers :</p>
+<div class="fblock">P(A) = 1/2  et  P(B) = 1/2</div>
+<span class="step">Etape 2 - Probabilites conditionnelles</span>
+<div class="fblock">P(R|A) = 3/5 = 0,6   (3 rouges sur 5 dans A)
+P(R|B) = 1/5 = 0,2   (1 rouge sur 5 dans B)</div>
+<span class="step">Etape 3 - Theoreme des probabilites totales</span>
+<div class="fblock">P(R) = P(R|A) x P(A) + P(R|B) x P(B)
+     = (3/5) x (1/2) + (1/5) x (1/2)
+     = 3/10 + 1/10 = 4/10 = 0,4</div>
+<div class="concl">✅ P(rouge) = 0,4 = 40%. Ce resultat est bien compris entre P(R|A)=0,6 et P(R|B)=0,2, ce qui confirme sa coherence.</div>`},
+{level:"hard",title:"Tirage sans remise et conditionnement",
+question:"Un sac contient 4 boules numerotees 1, 2, 3, 4. On tire 2 boules sans remise. Sachant que la 1ere boule est impaire, calculer P(somme >= 5).",
+answer:`<span class="step">Etape 1 - Analyser le conditionnement</span>
+<p>On est conditionne par C = "1ere boule impaire". Les impaires dans {1,2,3,4} sont 1 et 3.</p>
+<div class="fblock">P(1ere=1 | C) = 1/2  et  P(1ere=3 | C) = 1/2</div>
+<span class="step">Etape 2 - Cas 1ere boule = 1</span>
+<p>Il reste {2, 3, 4}. Pour somme >= 5 : 1 + x >= 5 => x >= 4 => x dans {4}.</p>
+<div class="fblock">P(somme>=5 | 1ere=1) = 1/3</div>
+<span class="step">Etape 3 - Cas 1ere boule = 3</span>
+<p>Il reste {1, 2, 4}. Pour somme >= 5 : 3 + x >= 5 => x >= 2 => x dans {2, 4}.</p>
+<div class="fblock">P(somme>=5 | 1ere=3) = 2/3</div>
+<span class="step">Etape 4 - Probabilites totales</span>
+<div class="fblock">P(somme>=5 | C) = (1/3)x(1/2) + (2/3)x(1/2)
+               = 1/6 + 2/6 = 3/6 = 1/2</div>
+<div class="concl">✅ P(somme>=5 | 1ere impaire) = 1/2 = 50%.</div>`}
+]},
+{title:"Variables Aleatoires Discretes",badge:'<span class="badge medium">Intermediaire</span>',
+content:`<h3>1. Definition</h3>
+<p>Une <strong style="color:var(--text)">variable aleatoire (VA) X</strong> est une fonction definie sur Omega qui associe a chaque resultat un nombre reel. Elle "traduit" les resultats en nombres pour les calculer.</p>
+<p>X est <strong style="color:var(--text)">discrete</strong> si elle prend un nombre fini ou denombrabledde valeurs.</p>
+<h3>2. Loi de probabilite</h3>
+<div class="fblock">P(X=xi) >= 0  pour tout i
+somme-i P(X=xi) = 1</div>
+<h3>3. Esperance</h3>
+<p>L'<strong style="color:var(--text)">esperance E(X)</strong> est la moyenne ponderee par les probabilites :</p>
+<div class="fblock">E(X) = somme-i xi x P(X=xi)</div>
+<div class="nblock"><p>E(X) n'est pas forcement une valeur possible de X. Exemple : E(de) = 3,5 meme si le de ne fait jamais 3,5.</p></div>
+<h3>4. Variance et ecart-type</h3>
+<div class="fblock">Var(X) = E(X^2) - [E(X)]^2
+sigma(X) = racine(Var(X))</div>
+<h3>5. Loi Binomiale B(n, p)</h3>
+<p>n repetitions independantes de probabilite de succes p. X = nombre de succes :</p>
+<div class="fblock">P(X=k) = C(n,k) x p^k x (1-p)^(n-k)
+E(X) = np   ;   Var(X) = np(1-p)</div>
+<h3>6. Loi de Poisson P(lambda)</h3>
+<div class="fblock">P(X=k) = e^(-lambda) x lambda^k / k!
+E(X) = Var(X) = lambda</div>
+<div class="nblock"><p>Approximation : si n grand et p petit, B(n,p) peut etre approche par Poisson(lambda=np).</p></div>`,
+exercises:[
+{level:"easy",title:"Loi d'une VA discrete",
+question:"X est une VA prenant les valeurs 0, 1, 2 avec P(X=0)=0,3 ; P(X=1)=0,5 ; P(X=2)=0,2. Verifier la loi, calculer E(X) et Var(X).",
+answer:`<span class="step">Etape 1 - Definir le cadre</span>
+<p>On travaille sur un espace (Omega, A, P). X est une VA discrete a valeurs dans {0, 1, 2}.</p>
+<span class="step">Etape 2 - Verifier la loi</span>
+<div class="fblock">Somme = 0,3 + 0,5 + 0,2 = 1,0 ✓
+Toutes les probabilites >= 0 ✓</div>
+<span class="step">Etape 3 - Calculer E(X)</span>
+<div class="fblock">E(X) = 0x0,3 + 1x0,5 + 2x0,2
+     = 0 + 0,5 + 0,4 = 0,9</div>
+<span class="step">Etape 4 - Calculer E(X^2)</span>
+<div class="fblock">E(X^2) = 0^2 x 0,3 + 1^2 x 0,5 + 2^2 x 0,2
+       = 0 + 0,5 + 0,8 = 1,3</div>
+<span class="step">Etape 5 - Calculer Var(X)</span>
+<div class="fblock">Var(X) = E(X^2) - [E(X)]^2
+       = 1,3 - (0,9)^2 = 1,3 - 0,81 = 0,49
+sigma = racine(0,49) = 0,7</div>
+<div class="concl">✅ E(X) = 0,9 et Var(X) = 0,49. L'ecart-type sigma = 0,7 indique une dispersion moderee autour de la moyenne.</div>`},
+{level:"easy",title:"Loi binomiale",
+question:"On lance une piece equilibree 4 fois. Soit X le nombre de faces. (1) Quelle loi suit X ? (2) Calculer P(X=2).",
+answer:`<span class="step">Etape 1 - Definir Omega et modeliser</span>
+<p>Omega = toutes les sequences de 4 lancers. Chaque lancer est independant avec P(Face) = 1/2. X = nombre de faces.</p>
+<div class="fblock">X suit B(n=4, p=1/2)</div>
+<span class="step">Etape 2 - Formule binomiale</span>
+<div class="fblock">P(X=k) = C(4,k) x (1/2)^k x (1/2)^(4-k) = C(4,k)/16</div>
+<span class="step">Etape 3 - Calculer P(X=2)</span>
+<p>C(4,2) = 4!/(2!x2!) = 6</p>
+<div class="fblock">P(X=2) = C(4,2) x (1/2)^2 x (1/2)^2
+       = 6 x (1/4) x (1/4) = 6/16 = 3/8 = 0,375</div>
+<div class="concl">✅ X suit B(4, 1/2) et P(X=2) = 37,5%. C'est la valeur la plus probable sur 4 lancers equilibres.</div>`},
+{level:"medium",title:"QCM - esperance et variance",
+question:"Un QCM a 10 questions, chacune avec 4 propositions dont une seule correcte. Un etudiant repond au hasard. Calculer E(X), Var(X) et sigma(X).",
+answer:`<span class="step">Etape 1 - Definir Omega et X</span>
+<p>Omega = ensemble des reponses aux 10 questions. Chaque reponse est independante avec P(correct) = 1/4.</p>
+<div class="fblock">X = nombre de bonnes reponses  =>  X suit B(10, 1/4)</div>
+<span class="step">Etape 2 - Esperance</span>
+<div class="fblock">E(X) = n x p = 10 x 1/4 = 2,5</div>
+<span class="step">Etape 3 - Variance</span>
+<div class="fblock">Var(X) = n x p x (1-p) = 10 x (1/4) x (3/4) = 30/16 = 1,875</div>
+<span class="step">Etape 4 - Ecart-type</span>
+<div class="fblock">sigma(X) = racine(1,875) ≈ 1,37</div>
+<div class="concl">✅ En repondant au hasard, on espere 2,5 bonnes reponses sur 10. Un etudiant qui en reussit plus de 4 depasse le pur hasard.</div>`},
+{level:"medium",title:"Loi de Poisson",
+question:"En moyenne 3 clients arrivent par minute. Les arrivees suivent une loi de Poisson. Calculer P(X=5) et P(X=0).",
+answer:`<span class="step">Etape 1 - Identifier la loi</span>
+<p>On compte des evenements rares et independants sur une periode fixee. La moyenne est lambda = 3.</p>
+<div class="fblock">X suit Poisson(lambda=3)
+P(X=k) = e^(-3) x 3^k / k!</div>
+<span class="step">Etape 2 - Calculer P(X=5)</span>
+<div class="fblock">P(X=5) = e^(-3) x 3^5 / 5!
+       = e^(-3) x 243 / 120
+       ≈ 0,0498 x 2,025 ≈ 0,101</div>
+<span class="step">Etape 3 - Calculer P(X=0)</span>
+<div class="fblock">P(X=0) = e^(-3) x 3^0 / 0! = e^(-3) ≈ 0,050</div>
+<div class="concl">✅ P(X=5) ≈ 10,1% et P(X=0) ≈ 5%. Il est peu probable (5%) qu'aucun client n'arrive en 1 minute quand la moyenne est 3.</div>`},
+{level:"hard",title:"Approximation de Poisson",
+question:"X suit B(100, 0,02). Justifier l'approximation par Poisson, puis calculer P(X>=2).",
+answer:`<span class="step">Etape 1 - Justifier l'approximation</span>
+<p>On peut approcher B(n,p) par Poisson(lambda=np) quand n >= 30 et p <= 0,05 :</p>
+<div class="fblock">n = 100 >= 30 ✓   et   p = 0,02 <= 0,05 ✓
+lambda = np = 100 x 0,02 = 2
+Donc X est approche par Poisson(lambda=2)</div>
+<span class="step">Etape 2 - Utiliser le complementaire</span>
+<div class="fblock">P(X>=2) = 1 - P(X=0) - P(X=1)</div>
+<span class="step">Etape 3 - Calculer P(X=0) et P(X=1)</span>
+<div class="fblock">P(X=0) = e^(-2) x 2^0/0! = e^(-2) ≈ 0,1353
+P(X=1) = e^(-2) x 2^1/1! = 2e^(-2) ≈ 0,2707</div>
+<span class="step">Etape 4 - Conclure</span>
+<div class="fblock">P(X>=2) = 1 - 0,1353 - 0,2707 = 0,5940</div>
+<div class="concl">✅ P(X>=2) ≈ 59,4%. L'approximation de Poisson evite de sommer 99 termes avec la loi binomiale.</div>`}
+]},
+{title:"Variables Aleatoires Continues",badge:'<span class="badge hard">Avance</span>',
+content:`<h3>1. Du discret au continu</h3>
+<p>Une <strong style="color:var(--text)">VA continue</strong> peut prendre toutes les valeurs dans un intervalle reel. Pour ces variables, P(X = valeur exacte) = 0 : on calcule uniquement des probabilites sur des intervalles.</p>
+<h3>2. Densite de probabilite f(x)</h3>
+<p>On utilise une <strong style="color:var(--text)">fonction de densite f(x)</strong> verifiant :</p>
+<div class="fblock">f(x) >= 0  pour tout x
+integrale de -inf a +inf de f(x)dx = 1
+P(a <= X <= b) = integrale de a a b de f(x)dx</div>
+<div class="nblock"><p>f(x) n'est pas une probabilite ! C'est une densite. La probabilite est l'aire sous la courbe entre deux bornes.</p></div>
+<h3>3. Esperance et variance</h3>
+<div class="fblock">E(X) = integrale de x.f(x)dx
+Var(X) = E(X^2) - [E(X)]^2  avec  E(X^2) = integrale de x^2.f(x)dx</div>
+<h3>4. Loi Uniforme U[a, b]</h3>
+<div class="fblock">f(x) = 1/(b-a)  sur [a,b]
+E(X) = (a+b)/2
+Var(X) = (b-a)^2/12</div>
+<h3>5. Loi Normale N(mu, sigma^2)</h3>
+<p>La plus importante en statistiques. Courbe en cloche symetrique autour de mu :</p>
+<div class="fblock">E(X) = mu  ;  Var(X) = sigma^2
+Standardisation : Z = (X-mu)/sigma suit N(0,1)</div>
+<div class="nblock"><p>Pour utiliser la table de N(0,1), on standardise : Z = (X-mu)/sigma.</p></div>
+<h3>6. Loi Exponentielle Exp(lambda)</h3>
+<p>Modelise des durees de vie ou temps d'attente. Propriete "sans memoire".</p>
+<div class="fblock">f(x) = lambda.e^(-lambda.x)  pour x >= 0
+E(X) = 1/lambda  ;  Var(X) = 1/lambda^2
+P(X > t) = e^(-lambda.t)</div>`,
+exercises:[
+{level:"easy",title:"Determination d'une densite",
+question:"Soit f(x) = cx^2 sur [0,1] et f(x) = 0 ailleurs. Trouver c pour que f soit une densite. Verifier les conditions.",
+answer:`<span class="step">Etape 1 - Rappeler les conditions</span>
+<div class="fblock">Condition 1 : f(x) >= 0  pour tout x
+Condition 2 : integrale de f(x)dx = 1</div>
+<span class="step">Etape 2 - Appliquer la condition 2</span>
+<p>Comme f = 0 hors de [0,1], on integre sur [0,1] :</p>
+<div class="fblock">integrale-0^1 cx^2 dx = c x [x^3/3]-0^1 = c x 1/3 = c/3</div>
+<span class="step">Etape 3 - Resoudre</span>
+<div class="fblock">c/3 = 1  =>  c = 3</div>
+<span class="step">Etape 4 - Verifier la condition 1</span>
+<div class="fblock">f(x) = 3x^2 >= 0  pour tout x dans [0,1] car x^2 >= 0 ✓</div>
+<div class="concl">✅ c = 3. La densite est f(x) = 3x^2 sur [0,1]. Les deux conditions sont satisfaites.</div>`},
+{level:"medium",title:"Loi uniforme",
+question:"X suit U[2, 8]. Calculer P(3 <= X <= 6), E(X) et Var(X).",
+answer:`<span class="step">Etape 1 - Identifier la densite</span>
+<div class="fblock">X suit U[2,8]  =>  f(x) = 1/(8-2) = 1/6  sur [2,8]
+f(x) = 0  ailleurs</div>
+<span class="step">Etape 2 - Calculer P(3 <= X <= 6)</span>
+<div class="fblock">P(3<=X<=6) = integrale-3^6 (1/6)dx = (1/6) x (6-3) = 3/6 = 1/2</div>
+<span class="step">Etape 3 - Calculer E(X)</span>
+<div class="fblock">E(X) = (a+b)/2 = (2+8)/2 = 5</div>
+<span class="step">Etape 4 - Calculer Var(X)</span>
+<div class="fblock">Var(X) = (b-a)^2/12 = (8-2)^2/12 = 36/12 = 3</div>
+<div class="concl">✅ P(3<=X<=6) = 1/2, E(X) = 5, Var(X) = 3. La moyenne est bien au centre de [2,8].</div>`},
+{level:"medium",title:"Loi exponentielle",
+question:"La duree de vie X d'un composant suit Exp(lambda=0,5). Calculer P(X > 3) et E(X).",
+answer:`<span class="step">Etape 1 - Identifier la loi et sa densite</span>
+<div class="fblock">X suit Exp(lambda=0,5)
+f(x) = 0,5 x e^(-0,5x)  pour x >= 0  ;  0 sinon</div>
+<span class="step">Etape 2 - Calculer P(X > 3)</span>
+<p>On utilise la formule de survie :</p>
+<div class="fblock">P(X > t) = e^(-lambda.t)
+P(X > 3) = e^(-0,5 x 3) = e^(-1,5) ≈ 0,223</div>
+<span class="step">Etape 3 - Calculer E(X)</span>
+<div class="fblock">E(X) = 1/lambda = 1/0,5 = 2 unites de temps</div>
+<div class="concl">✅ P(X>3) ≈ 22,3% : seulement 22% des composants durent plus de 3 unites. La duree moyenne est 2 unites.</div>`},
+{level:"hard",title:"Loi normale - standardisation",
+question:"X suit N(mu=50, sigma^2=25). Calculer P(45 <= X <= 60). On donne : Phi(2) ≈ 0,9772 et Phi(-1) ≈ 0,1587.",
+answer:`<span class="step">Etape 1 - Identifier les parametres</span>
+<div class="fblock">X suit N(mu=50, sigma^2=25)
+sigma = racine(25) = 5</div>
+<span class="step">Etape 2 - Standardiser</span>
+<p>On pose Z = (X-mu)/sigma qui suit N(0,1). On transforme les bornes :</p>
+<div class="fblock">Pour X = 45 : Z1 = (45-50)/5 = -1
+Pour X = 60 : Z2 = (60-50)/5 = +2</div>
+<span class="step">Etape 3 - Réécrire la probabilite</span>
+<div class="fblock">P(45 <= X <= 60) = P(-1 <= Z <= 2)
+               = Phi(2) - Phi(-1)</div>
+<span class="step">Etape 4 - Appliquer les valeurs de la table</span>
+<div class="fblock">= 0,9772 - 0,1587 = 0,8185</div>
+<div class="concl">✅ P(45<=X<=60) ≈ 81,85%. Pres de 82% des valeurs sont dans [mu-sigma, mu+2sigma].</div>`},
+{level:"hard",title:"Esperance et variance par integration",
+question:"X a pour densite f(x) = 3x^2 sur [0,1]. Calculer E(X) et Var(X) en detaillant chaque integrale.",
+answer:`<span class="step">Etape 1 - Verification prealable</span>
+<div class="fblock">integrale-0^1 3x^2 dx = 3[x^3/3]-0^1 = [x^3]-0^1 = 1 ✓</div>
+<span class="step">Etape 2 - Calculer E(X)</span>
+<div class="fblock">E(X) = integrale-0^1 x . 3x^2 dx = 3 integrale-0^1 x^3 dx
+     = 3 x [x^4/4]-0^1 = 3 x 1/4 = 3/4 = 0,75</div>
+<span class="step">Etape 3 - Calculer E(X^2)</span>
+<div class="fblock">E(X^2) = integrale-0^1 x^2 . 3x^2 dx = 3 integrale-0^1 x^4 dx
+       = 3 x [x^5/5]-0^1 = 3 x 1/5 = 3/5 = 0,6</div>
+<span class="step">Etape 4 - Calculer Var(X)</span>
+<div class="fblock">Var(X) = E(X^2) - [E(X)]^2
+       = 3/5 - (3/4)^2
+       = 3/5 - 9/16
+       = 48/80 - 45/80 = 3/80 ≈ 0,0375</div>
+<div class="concl">✅ E(X) = 3/4 et Var(X) = 3/80. La faible variance confirme que X est concentre autour de 0,75 : la densite 3x^2 favorise les grandes valeurs de [0,1].</div>`}
+]}
+];
+const QZ=[
+{level:"easy",q:"Quelle est la probabilite d'obtenir un 6 en lançant un de equilibre ?",opts:["1/3","1/4","1/6","1/2"],ans:2,explain:"Omega={1,2,3,4,5,6}, |Omega|=6. P(6) = 1/6 ≈ 0,167."},
+{level:"easy",q:"Si P(A) = 0,3, quelle est P(complementaire de A) ?",opts:["0,3","0,7","0,6","1,3"],ans:1,explain:"P(barre-A) = 1 - P(A) = 1 - 0,3 = 0,7."},
+{level:"medium",q:"P(A)=0,5 ; P(B)=0,4 ; P(A inter B)=0,2. Quelle est P(A|B) ?",opts:["0,4","0,5","0,2","0,8"],ans:1,explain:"P(A|B) = P(A inter B)/P(B) = 0,2/0,4 = 0,5."},
+{level:"medium",q:"X suit B(5, 0,4). Quelle est E(X) ?",opts:["0,4","2","2,4","5"],ans:1,explain:"E(X) = n x p = 5 x 0,4 = 2."},
+{level:"hard",q:"X suit Poisson(lambda=2). Quelle est P(X=0) ?",opts:["0,5","e^(-2) ≈ 0,135","0,2","2e^(-2)"],ans:1,explain:"P(X=0) = e^(-2) x 2^0/0! = e^(-2) ≈ 0,135."},
+{level:"hard",q:"X suit N(10, 4). Que suit Z = (X-10)/2 ?",opts:["N(10,4)","N(0,4)","N(0,1)","N(5,2)"],ans:2,explain:"La standardisation Z=(X-mu)/sigma transforme toute loi normale en N(0,1)."}
+];
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab,.mnbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-tab,.mnbtn').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');});
+}
+function openLesson(i){
+  const l=L[i];
+  document.getElementById('cours-list').style.display='none';
+  document.getElementById('lesson-view').classList.add('active');
+  document.getElementById('lesson-title').textContent=l.title;
+  document.getElementById('lesson-badge').innerHTML=l.badge;
+  document.getElementById('lesson-content').innerHTML=l.content;
+  const ep=document.getElementById('lesson-exercises');
+  ep.innerHTML='<div class="ep-title">Exercices</div>';
+  l.exercises.forEach((ex,j)=>{ep.innerHTML+=buildEx(ex,j,i,'les');});
+  showPage('cours');
+}
+function closeLesson(){document.getElementById('cours-list').style.display='block';document.getElementById('lesson-view').classList.remove('active');}
+function buildEx(ex,i,li,pfx){
+  const id=pfx+'-'+li+'-'+i;
+  return `<div class="ex-card" id="${id}"><div class="ex-header" onclick="toggleEx('${id}')"><div class="ex-header-left"><div class="ex-num">${i+1}</div><span class="ex-title">${ex.title}</span></div><div style="display:flex;align-items:center;gap:7px"><span class="badge ${ex.level}">${ex.level==='easy'?'Facile':ex.level==='medium'?'Moyen':'Difficile'}</span><span class="ex-toggle">▾</span></div></div><div class="ex-body"><div class="ex-question">${ex.question}</div><button class="show-ans-btn" onclick="toggleAns('ans-${id}',this)">👁 Voir le corrige</button><div class="ans-block" id="ans-${id}"><span class="ans-label">✓ Corrige detaille</span>${ex.answer}</div></div></div>`;
+}
+function toggleEx(id){document.getElementById(id).classList.toggle('open');}
+function toggleAns(id,btn){const el=document.getElementById(id);el.classList.toggle('visible');btn.textContent=el.classList.contains('visible')?'🙈 Masquer':'👁 Voir le corrige';}
+function renderAllExos(f='all'){
+  const p=document.getElementById('all-exercises');p.innerHTML='';let n=0;
+  L.forEach((l,li)=>{l.exercises.forEach((ex,ei)=>{if(f!=='all'&&ex.level!==f)return;p.innerHTML+=buildEx(ex,n++,li,'all');});});
+  if(!n)p.innerHTML='<p style="color:var(--muted);padding:16px 0">Aucun exercice pour ce niveau.</p>';
+}
+function filterExos(f,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAllExos(f);}
+let qi=0,sc=0,answered=false;
+function renderQ(){
+  const q=QZ[qi];
+  document.getElementById('qctr').textContent=(qi+1)+' / '+QZ.length;
+  document.getElementById('pbfill').style.width=(((qi+1)/QZ.length)*100)+'%';
+  document.getElementById('qlvl').innerHTML='<span class="badge '+q.level+'">'+(q.level==='easy'?'Facile':q.level==='medium'?'Moyen':'Difficile')+'</span><br><br>';
+  document.getElementById('quiz-q').textContent=q.q;
+  document.getElementById('quiz-opts').innerHTML=q.opts.map((o,i)=>`<button class="qopt" onclick="answer(${i})" id="opt-${i}"><span class="oletter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('');
+  document.getElementById('qfb').className='qfb';document.getElementById('qnext').className='qnext';answered=false;
+}
+function answer(i){
+  if(answered)return;answered=true;
+  const q=QZ[qi];document.querySelectorAll('.qopt').forEach(o=>o.disabled=true);
+  const fb=document.getElementById('qfb');
+  if(i===q.ans){sc++;document.getElementById('opt-'+i).classList.add('correct');fb.textContent='Correct ! '+q.explain;fb.className='qfb correct visible';}
+  else{document.getElementById('opt-'+i).classList.add('wrong');document.getElementById('opt-'+q.ans).classList.add('correct');fb.textContent='Incorrect. '+q.explain;fb.className='qfb wrong visible';}
+  const nb=document.getElementById('qnext');nb.textContent=qi<QZ.length-1?'Question suivante →':'Voir mon resultat';nb.className='qnext visible';
+}
+function nextQ(){qi++;if(qi>=QZ.length)showResult();else renderQ();}
+function showResult(){
+  document.getElementById('quiz-main').style.display='none';document.getElementById('qresult').className='qresult visible';
+  document.getElementById('rscore').textContent=sc+'/'+QZ.length;
+  const p=sc/QZ.length;document.getElementById('rmsg').textContent=p===1?'Parfait ! Tu maitrises les probabilites !':p>=0.7?'Tres bien ! Encore quelques revisions.':p>=0.5?'Pas mal ! Continue a pratiquer.':'Revois les cours, tu vas progresser !';
+}
+function restartQ(){qi=0;sc=0;document.getElementById('quiz-main').style.display='block';document.getElementById('qresult').className='qresult';renderQ();}
+renderAllExos();renderQ();
+</script>
+</body>
+</html>
