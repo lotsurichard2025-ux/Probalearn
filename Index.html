@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProbaLearn — Maîtrise les Probabilités</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2236;
+    --card: #151e30;
+    --border: #1f2d45;
+    --accent: #4fffb0;
+    --accent2: #38bdf8;
+    --accent3: #f472b6;
+    --gold: #fbbf24;
+    --text: #e8edf5;
+    --muted: #7a8faa;
+    --easy: #4fffb0;
+    --medium: #fbbf24;
+    --hard: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; background: rgba(10,14,26,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .nav-tabs { display: flex; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 5px; }
+  .nav-tab { padding: 8px 20px; border-radius: 8px; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .nav-tab.active { background: var(--accent); color: #0a0e1a; font-weight: 700; }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+  .nav-badge { background: var(--accent3); color: white; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; }
+  .page { display: none; padding: 40px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .page.active { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .hero { text-align: center; padding: 60px 20px 50px; }
+  .hero-tag { display: inline-block; background: rgba(79,255,176,0.12); border: 1px solid rgba(79,255,176,0.3); color: var(--accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 520px; margin: 0 auto 40px; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); display: block; }
+  .stat-label { color: var(--muted); font-size: 0.82rem; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .section-sub { color: var(--muted); margin-bottom: 28px; font-size: 0.92rem; }
+  .chapters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 48px; }
+  .chapter-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .chapter-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+  .chapter-card.green::before { background: var(--easy); }
+  .chapter-card.blue::before { background: var(--accent2); }
+  .chapter-card.pink::before { background: var(--accent3); }
+  .chapter-card.gold::before { background: var(--gold); }
+  .chapter-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(79,255,176,0.08); }
+  .chapter-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 16px; }
+  .chapter-icon.green { background: rgba(79,255,176,0.12); }
+  .chapter-icon.blue { background: rgba(56,189,248,0.12); }
+  .chapter-icon.pink { background: rgba(244,114,182,0.12); }
+  .chapter-icon.gold { background: rgba(251,191,36,0.12); }
+  .chapter-card h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .chapter-card p { color: var(--muted); font-size: 0.83rem; line-height: 1.5; margin-bottom: 16px; }
+  .chapter-meta { display: flex; gap: 8px; align-items: center; }
+  .badge { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; }
+  .badge.easy { background: rgba(79,255,176,0.15); color: var(--easy); }
+  .badge.medium { background: rgba(251,191,36,0.15); color: var(--gold); }
+  .badge.hard { background: rgba(248,113,113,0.15); color: var(--hard); }
+  .badge.lessons { background: rgba(255,255,255,0.07); color: var(--muted); }
+  .lesson-view { display: none; }
+  .lesson-view.active { display: block; animation: fadeUp 0.3s ease; }
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; cursor: pointer; margin-bottom: 28px; transition: color 0.2s; background: none; border: none; font-family: 'DM Sans', sans-serif; }
+  .back-btn:hover { color: var(--accent); }
+  .lesson-header { margin-bottom: 32px; }
+  .lesson-header h2 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  .lesson-body { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+  .course-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .course-box h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--accent2); }
+  .course-box p { color: var(--muted); line-height: 1.8; margin-bottom: 14px; font-size: 0.92rem; }
+  .formula-block { background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-family: 'Courier New', monospace; font-size: 0.95rem; color: var(--accent); line-height: 1.7; }
+  .example-block { background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.2); border-radius: 10px; padding: 16px 18px; margin: 16px 0; }
+  .example-block strong { color: var(--accent2); font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; }
+  .example-block p { color: var(--text); margin-top: 8px; font-size: 0.9rem; }
+  .exercises-panel { display: flex; flex-direction: column; gap: 14px; }
+  .ex-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+  .ex-card:hover { border-color: rgba(79,255,176,0.3); }
+  .ex-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .ex-header-left { display: flex; align-items: center; gap: 10px; }
+  .ex-num { width: 28px; height: 28px; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+  .ex-title { font-size: 0.88rem; font-weight: 500; }
+  .ex-toggle { color: var(--muted); font-size: 1.1rem; transition: transform 0.2s; }
+  .ex-card.open .ex-toggle { transform: rotate(180deg); }
+  .ex-body { display: none; padding: 0 20px 20px; }
+  .ex-card.open .ex-body { display: block; animation: fadeUp 0.2s ease; }
+  .ex-question { color: var(--text); font-size: 0.9rem; line-height: 1.7; margin-bottom: 14px; padding: 14px; background: var(--bg3); border-radius: 10px; }
+  .show-answer-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.3); color: var(--accent); border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .show-answer-btn:hover { background: rgba(79,255,176,0.2); }
+  .answer-block { display: none; margin-top: 14px; background: rgba(79,255,176,0.05); border: 1px solid rgba(79,255,176,0.15); border-radius: 10px; padding: 16px; }
+  .answer-block.visible { display: block; animation: fadeUp 0.2s ease; }
+  .answer-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .answer-block p { font-size: 0.88rem; color: var(--text); line-height: 1.8; }
+  .quiz-container { max-width: 700px; margin: 0 auto; }
+  .quiz-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+  .progress-bar-wrap { flex: 1; height: 6px; background: var(--bg3); border-radius: 10px; margin: 0 20px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; transition: width 0.4s ease; }
+  .quiz-counter { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--muted); font-size: 0.9rem; white-space: nowrap; }
+  .quiz-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; margin-bottom: 20px; }
+  .quiz-question { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; line-height: 1.5; margin-bottom: 28px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option { padding: 14px 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); font-size: 0.92rem; cursor: pointer; transition: all 0.2s; text-align: left; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 12px; }
+  .quiz-option:hover:not(:disabled) { border-color: var(--accent); background: rgba(79,255,176,0.07); }
+  .quiz-option.correct { border-color: var(--easy); background: rgba(79,255,176,0.12); color: var(--easy); }
+  .quiz-option.wrong { border-color: var(--hard); background: rgba(248,113,113,0.08); color: var(--hard); }
+  .quiz-option:disabled { cursor: default; }
+  .option-letter { width: 26px; height: 26px; border-radius: 6px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+  .quiz-feedback { padding: 16px 20px; border-radius: 12px; font-size: 0.88rem; line-height: 1.6; margin-top: 16px; display: none; }
+  .quiz-feedback.correct { background: rgba(79,255,176,0.08); border: 1px solid rgba(79,255,176,0.2); color: var(--easy); }
+  .quiz-feedback.wrong { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--hard); }
+  .quiz-feedback.visible { display: block; animation: fadeUp 0.2s ease; }
+  .quiz-next-btn { display: none; width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent); color: #0a0e1a; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 12px; }
+  .quiz-next-btn:hover { opacity: 0.9; }
+  .quiz-next-btn.visible { display: block; animation: fadeUp 0.2s ease; }
+  .quiz-result { text-align: center; padding: 40px 20px; display: none; }
+  .quiz-result.visible { display: block; animation: fadeUp 0.4s ease; }
+  .result-score { font-family: 'Syne', sans-serif; font-size: 5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 12px; }
+  .result-msg { font-size: 1.1rem; color: var(--muted); margin-bottom: 32px; }
+  .restart-btn { padding: 12px 32px; border-radius: 12px; background: var(--accent); color: #0a0e1a; font-family: 'Syne', sans-serif; font-weight: 700; border: none; cursor: pointer; font-size: 0.95rem; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .filter-btn { padding: 7px 18px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(79,255,176,0.08); }
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .page { padding: 24px 20px; }
+    .lesson-body { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+    .nav-tabs { display: none; }
+    .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--border); display: flex; z-index: 100; padding: 8px; }
+    .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px; background: none; border: none; color: var(--muted); font-size: 0.68rem; font-family: 'DM Sans', sans-serif; cursor: pointer; border-radius: 10px; transition: all 0.2s; }
+    .mobile-nav-btn.active { color: var(--accent); background: rgba(79,255,176,0.08); }
+    .mobile-nav-btn span:first-child { font-size: 1.2rem; }
+    body { padding-bottom: 80px; }
+  }
+  @media (min-width: 769px) { .mobile-nav { display: none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Proba<span>Learn</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">Accueil</button>
+    <button class="nav-tab" onclick="showPage('cours')">Cours</button>
+    <button class="nav-tab" onclick="showPage('exercices')">Exercices</button>
+    <button class="nav-tab" onclick="showPage('quiz')">Quiz</button>
+  </div>
+  <span class="nav-badge">BÊTA GRATUITE</span>
+</nav>
+
+<div class="mobile-nav">
+  <button class="mobile-nav-btn active" onclick="showPage('home')"><span>🏠</span>Accueil</button>
+  <button class="mobile-nav-btn" onclick="showPage('cours')"><span>📚</span>Cours</button>
+  <button class="mobile-nav-btn" onclick="showPage('exercices')"><span>✏️</span>Exos</button>
+  <button class="mobile-nav-btn" onclick="showPage('quiz')"><span>⚡</span>Quiz</button>
+</div>
+
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">🎯 Plateforme d'apprentissage</div>
+    <h1>Maîtrise les<br><em>Probabilités</em><br>pas à pas</h1>
+    <p>Cours clairs, exercices progressifs et corrigés détaillés. Du niveau débutant jusqu'au niveau avancé.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Chapitres</span></div>
+      <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Exercices</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">Niveaux</span></div>
+    </div>
+  </div>
+  <div class="section-title">Chapitres disponibles</div>
+  <div class="section-sub">Clique sur un chapitre pour accéder au cours et aux exercices</div>
+  <div class="chapters-grid">
+    <div class="chapter-card green" onclick="openLesson(0)">
+      <div class="chapter-icon green">🎲</div>
+      <h3>Bases des Probabilités</h3>
+      <p>Espace de probabilité, événements, loi des grands nombres, axiomes de Kolmogorov.</p>
+      <div class="chapter-meta"><span class="badge easy">Débutant</span><span class="badge lessons">5 exercices</span></div>
+    </div>
+    <div class="chapter-card blue" onclick="openLesson(1)">
+      <div class="chapter-icon blue">🔗</div>
+      <h3>Probabilités Conditionnelles</h3>
+      <p>Probabilité conditionnelle, indépendance, formule de Bayes, théorème des probabilités totales.</p>
+      <div class="chapter-meta"><span class="badge medium">Intermédiaire</span><span class="badge lessons">5 exercices</span></div>
+    </div>
+    <div class="chapter-card pink" onclick="openLesson(2)">
+      <div class="chapter-icon pink">📊</div>
+      <h3>Variables Aléatoires Discrètes</h3>
+      <p>Loi de probabilité, espérance, variance, écart-type. Lois binomiale et de Poisson.</p>
+      <div class="chapter-meta"><span class="badge medium">Intermédiaire</span><span class="badge lessons">5 exercices</span></div>
+    </div>
+    <div class="chapter-card gold" onclick="openLesson(3)">
+      <div class="chapter-icon gold">📈</div>
+      <h3>Variables Aléatoires Continues</h3>
+      <p>Densité de probabilité, fonction de répartition, loi normale, loi exponentielle.</p>
+      <div class="chapter-meta"><span class="badge hard">Avancé</span><span class="badge lessons">5 exercices</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-cours">
+  <div id="cours-list">
+    <div class="section-title">Tous les cours</div>
+    <div class="section-sub">Sélectionne un chapitre pour commencer</div>
+    <div class="chapters-grid">
+      <div class="chapter-card green" onclick="openLesson(0)"><div class="chapter-icon green">🎲</div><h3>Bases des Probabilités</h3><p>Espace de probabilité, événements, axiomes, probabilité classique.</p><div class="chapter-meta"><span class="badge easy">Débutant</span></div></div>
+      <div class="chapter-card blue" onclick="openLesson(1)"><div class="chapter-icon blue">🔗</div><h3>Probabilités Conditionnelles</h3><p>Probabilité conditionnelle, indépendance, théorème de Bayes.</p><div class="chapter-meta"><span class="badge medium">Intermédiaire</span></div></div>
+      <div class="chapter-card pink" onclick="openLesson(2)"><div class="chapter-icon pink">📊</div><h3>Variables Aléatoires Discrètes</h3><p>Loi de probabilité, espérance, variance, lois usuelles.</p><div class="chapter-meta"><span class="badge medium">Intermédiaire</span></div></div>
+      <div class="chapter-card gold" onclick="openLesson(3)"><div class="chapter-icon gold">📈</div><h3>Variables Aléatoires Continues</h3><p>Densité, répartition, loi normale, loi exponentielle.</p><div class="chapter-meta"><span class="badge hard">Avancé</span></div></div>
+    </div>
+  </div>
+  <div class="lesson-view" id="lesson-view">
+    <button class="back-btn" onclick="closeLesson()">← Retour aux chapitres</button>
+    <div class="lesson-header">
+      <h2 id="lesson-title"></h2>
+      <div id="lesson-badge"></div>
+    </div>
+    <div class="lesson-body">
+      <div class="course-box" id="lesson-content"></div>
+      <div class="exercises-panel" id="lesson-exercises"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-exercices">
+  <div class="section-title">Tous les exercices</div>
+  <div class="section-sub">Filtre par niveau de difficulté</div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterExos('all', this)">Tous</button>
+    <button class="filter-btn" onclick="filterExos('easy', this)">🟢 Débutant</button>
+    <button class="filter-btn" onclick="filterExos('medium', this)">🟡 Intermédiaire</button>
+    <button class="filter-btn" onclick="filterExos('hard', this)">🔴 Avancé</button>
+  </div>
+  <div class="exercises-panel" id="all-exercises"></div>
+</div>
+
+<div class="page" id="page-quiz">
+  <div class="quiz-container">
+    <div class="section-title">Quiz rapide ⚡</div>
+    <div class="section-sub">Teste tes connaissances en probabilités</div>
+    <div id="quiz-main">
+      <div class="quiz-header">
+        <span class="quiz-counter" id="quiz-counter">1 / 6</span>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="quiz-progress" style="width:16%"></div></div>
+      </div>
+      <div class="quiz-card" id="quiz-card">
+        <div class="quiz-level-badge" id="quiz-level-badge"></div>
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQuestion()">Question suivante →</button>
+      </div>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-score" id="result-score">0/6</div>
+      <div class="result-msg" id="result-msg"></div>
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const lessons = [
+  {
+    title: "Bases des Probabilités",
+    badge: '<span class="badge easy">Débutant</span>',
+    content: `<h3>1. Espace de probabilité</h3><p>Un <strong style="color:var(--text)">espace de probabilité</strong> est un triplet (Ω, A, P) où :</p><p>— <strong style="color:var(--text)">Ω</strong> est l'univers (ensemble de tous les résultats possibles)</p><p>— <strong style="color:var(--text)">A</strong> est une tribu (ensemble des événements)</p><p>— <strong style="color:var(--text)">P</strong> est une mesure de probabilité</p><h3 style="margin-top:20px">2. Probabilité classique</h3><p>Lorsque tous les résultats sont équiprobables :</p><div class="formula-block">P(A) = Nombre de cas favorables / Nombre de cas possibles</div><div class="example-block"><strong>Exemple</strong><p>On lance un dé à 6 faces. P(pair) = 3/6 = 1/2 = 0,5</p></div><h3 style="margin-top:20px">3. Propriétés fondamentales</h3><div class="formula-block">0 ≤ P(A) ≤ 1\nP(Ω) = 1 et P(∅) = 0\nP(A ∪ B) = P(A) + P(B) - P(A ∩ B)\nP(Ā) = 1 - P(A)</div>`,
+    exercises: [
+      { level: "easy", title: "Lancer d'une pièce", question: "On lance une pièce équilibrée deux fois. Quel est l'espace Ω ? Quelle est la probabilité d'obtenir exactement une face ?", answer: `<p>Ω = {PP, PF, FP, FF} → 4 résultats équiprobables.</p><div class="formula-block">P(une seule face) = 2/4 = 1/2</div>` },
+      { level: "easy", title: "Tirage d'une carte", question: "Dans un jeu de 52 cartes, on tire une carte au hasard. Quelle est la probabilité de tirer un As ?", answer: `<div class="formula-block">P(As) = 4/52 = 1/13 ≈ 0,077</div>` },
+      { level: "medium", title: "Probabilité d'une union", question: "P(A) = 0,4 ; P(B) = 0,3 ; P(A∩B) = 0,1. Calculer P(A∪B).", answer: `<div class="formula-block">P(A∪B) = 0,4 + 0,3 - 0,1 = 0,6</div>` },
+      { level: "medium", title: "Événement complémentaire", question: "La probabilité qu'il pleuve demain est 0,35. Quelle est la probabilité qu'il ne pleuve pas ?", answer: `<div class="formula-block">P(pas de pluie) = 1 - 0,35 = 0,65</div>` },
+      { level: "hard", title: "Dé et événements", question: "On lance un dé. A = multiples de 2, B = multiples de 3. Calculer P(A∪B) et P(A∩B).", answer: `<p>A={2,4,6}, B={3,6}, A∩B={6}</p><div class="formula-block">P(A∪B) = 1/2 + 1/3 - 1/6 = 2/3</div>` }
+    ]
+  },
+  {
+    title: "Probabilités Conditionnelles",
+    badge: '<span class="badge medium">Intermédiaire</span>',
+    content: `<h3>1. Définition</h3><div class="formula-block">P(A|B) = P(A ∩ B) / P(B)</div><h3 style="margin-top:20px">2. Indépendance</h3><div class="formula-block">P(A ∩ B) = P(A) × P(B)</div><h3 style="margin-top:20px">3. Théorème de Bayes</h3><div class="formula-block">P(B|A) = P(A|B) × P(B) / P(A)</div><h3 style="margin-top:20px">4. Probabilités totales</h3><div class="formula-block">P(A) = Σ P(A|Bᵢ) × P(Bᵢ)</div>`,
+    exercises: [
+      { level: "easy", title: "Probabilité conditionnelle simple", question: "P(A)=0,5 ; P(B)=0,4 ; P(A∩B)=0,2. Calculer P(A|B) et P(B|A).", answer: `<div class="formula-block">P(A|B) = 0,2/0,4 = 0,5\nP(B|A) = 0,2/0,5 = 0,4</div>` },
+      { level: "easy", title: "Test d'indépendance", question: "P(A)=0,3 ; P(B)=0,4 ; P(A∩B)=0,12. A et B sont-ils indépendants ?", answer: `<div class="formula-block">P(A)×P(B) = 0,12 = P(A∩B) ✓ Indépendants</div>` },
+      { level: "medium", title: "Théorème de Bayes", question: "Maladie : 1% de la pop. Test positif : 99% si malade, 5% si non malade. P(malade | test+) ?", answer: `<div class="formula-block">P(T) = 0,99×0,01 + 0,05×0,99 = 0,0594\nP(M|T) = 0,0099/0,0594 ≈ 16,7%</div>` },
+      { level: "medium", title: "Urnes et probabilités totales", question: "Urne A : 3 rouges, 2 bleues. Urne B : 1 rouge, 4 bleues. On choisit une urne au hasard. P(rouge) ?", answer: `<div class="formula-block">P(R) = (3/5)(1/2) + (1/5)(1/2) = 0,4</div>` },
+      { level: "hard", title: "Chaîne conditionnelle", question: "Sac : boules 1,2,3,4. On tire 2 sans remise. Sachant que la 1ère est impaire, P(somme ≥ 5) ?", answer: `<div class="formula-block">P = (1/3)(1/2) + (2/3)(1/2) = 1/2</div>` }
+    ]
+  },
+  {
+    title: "Variables Aléatoires Discrètes",
+    badge: '<span class="badge medium">Intermédiaire</span>',
+    content: `<h3>1. Espérance et Variance</h3><div class="formula-block">E(X) = Σ xᵢ × P(X=xᵢ)\nVar(X) = E(X²) - [E(X)]²</div><h3 style="margin-top:20px">2. Loi Binomiale B(n,p)</h3><div class="formula-block">P(X=k) = C(n,k) × pᵏ × (1-p)ⁿ⁻ᵏ\nE(X) = np ; Var(X) = np(1-p)</div><h3 style="margin-top:20px">3. Loi de Poisson P(λ)</h3><div class="formula-block">P(X=k) = e⁻λ × λᵏ / k!\nE(X) = Var(X) = λ</div>`,
+    exercises: [
+      { level: "easy", title: "Loi d'une VA discrète", question: "X prend 0,1,2 avec P(0)=0,3 ; P(1)=0,5 ; P(2)=0,2. Calculer E(X) et Var(X).", answer: `<div class="formula-block">E(X) = 0,9\nVar(X) = 1,3 - 0,81 = 0,49</div>` },
+      { level: "easy", title: "Loi binomiale", question: "On lance une pièce 4 fois. P(exactement 2 faces) ?", answer: `<div class="formula-block">P(X=2) = C(4,2)×(0,5)⁴ = 6/16 = 0,375</div>` },
+      { level: "medium", title: "QCM au hasard", question: "10 questions, 4 choix chacune. En répondant au hasard, E(X) et Var(X) ?", answer: `<div class="formula-block">E(X) = 10×1/4 = 2,5\nVar(X) = 10×(1/4)×(3/4) = 1,875</div>` },
+      { level: "medium", title: "Loi de Poisson", question: "En moyenne 3 clients/min. P(exactement 5 clients en 1 min) ?", answer: `<div class="formula-block">P(X=5) = e⁻³×243/120 ≈ 0,101</div>` },
+      { level: "hard", title: "Approximation Poisson", question: "X~B(100,0,02). Approcher P(X≥2) avec Poisson(λ=2).", answer: `<div class="formula-block">P(X≥2) = 1 - e⁻² - 2e⁻² = 1 - 0,406 ≈ 0,594</div>` }
+    ]
+  },
+  {
+    title: "Variables Aléatoires Continues",
+    badge: '<span class="badge hard">Avancé</span>',
+    content: `<h3>1. Densité de probabilité</h3><div class="formula-block">P(a≤X≤b) = ∫[a→b] f(x)dx\n∫f(x)dx = 1 et f(x) ≥ 0</div><h3 style="margin-top:20px">2. Loi Normale N(μ,σ²)</h3><div class="formula-block">E(X)=μ ; Var(X)=σ²\nZ = (X-μ)/σ ~ N(0,1)</div><h3 style="margin-top:20px">3. Loi Exponentielle Exp(λ)</h3><div class="formula-block">f(x) = λe⁻λˣ (x≥0)\nE(X)=1/λ ; P(X>t)=e⁻λᵗ</div>`,
+    exercises: [
+      { level: "easy", title: "Vérification de densité", question: "f(x) = cx² sur [0,1]. Trouver c.", answer: `<div class="formula-block">∫cx²dx = c/3 = 1 → c = 3</div>` },
+      { level: "medium", title: "Loi uniforme", question: "X ~ U[2,8]. Calculer P(3≤X≤6), E(X) et Var(X).", answer: `<div class="formula-block">P = 3/6 = 1/2\nE(X) = 5\nVar(X) = 36/12 = 3</div>` },
+      { level: "medium", title: "Loi exponentielle", question: "Durée de vie ~ Exp(0,5). P(durée > 3) ? Durée moyenne ?", answer: `<div class="formula-block">P(X>3) = e⁻¹·⁵ ≈ 0,223\nE(X) = 1/0,5 = 2</div>` },
+      { level: "hard", title: "Loi normale", question: "X~N(50,25). Calculer P(45≤X≤60). [Φ(2)≈0,9772 ; Φ(-1)≈0,1587]", answer: `<div class="formula-block">Z₁=(45-50)/5=-1 ; Z₂=(60-50)/5=2\nP = Φ(2)-Φ(-1) = 0,9772-0,1587 = 0,8185</div>` },
+      { level: "hard", title: "Espérance — densité", question: "f(x)=3x² sur [0,1]. Calculer E(X) et Var(X).", answer: `<div class="formula-block">E(X) = 3/4\nVar(X) = 3/5 - 9/16 = 3/80</div>` }
+    ]
+  }
+];
+
+const quizQuestions = [
+  { level:"easy", q:"Quelle est la probabilité d'obtenir un 6 en lançant un dé équilibré ?", opts:["1/3","1/4","1/6","1/2"], ans:2, explain:"Le dé a 6 faces équiprobables. P(6) = 1/6." },
+  { level:"easy", q:"Si P(A) = 0,3, quelle est P(Ā) ?", opts:["0,3","0,7","0,6","1,3"], ans:1, explain:"P(Ā) = 1 - P(A) = 0,7." },
+  { level:"medium", q:"P(A)=0,5 ; P(B)=0,4 ; P(A∩B)=0,2. Quelle est P(A|B) ?", opts:["0,4","0,5","0,2","0,8"], ans:1, explain:"P(A|B) = 0,2/0,4 = 0,5." },
+  { level:"medium", q:"X ~ B(5, 0,4). Quelle est E(X) ?", opts:["0,4","2","2,4","5"], ans:1, explain:"E(X) = n×p = 5×0,4 = 2." },
+  { level:"hard", q:"X ~ Poisson(λ=2). Quelle est P(X=0) ?", opts:["0,5","e⁻² ≈ 0,135","0,2","2e⁻²"], ans:1, explain:"P(X=0) = e⁻² ≈ 0,135." },
+  { level:"hard", q:"X ~ N(10,4). Que vaut Z = (X-10)/2 ?", opts:["N(10,4)","N(0,4)","N(0,1)","N(5,2)"], ans:2, explain:"La standardisation donne toujours N(0,1)." }
+];
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab,.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(b => { if(b.getAttribute('onclick').includes(id)) b.classList.add('active'); });
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => { if(b.getAttribute('onclick').includes(id)) b.classList.add('active'); });
+}
+
+function openLesson(idx) {
+  const l = lessons[idx];
+  document.getElementById('cours-list').style.display = 'none';
+  document.getElementById('lesson-view').classList.add('active');
+  document.getElementById('lesson-title').textContent = l.title;
+  document.getElementById('lesson-badge').innerHTML = l.badge;
+  document.getElementById('lesson-content').innerHTML = l.content;
+  const ep = document.getElementById('lesson-exercises');
+  ep.innerHTML = '<div style="font-family:\'Syne\',sans-serif;font-weight:700;margin-bottom:12px;font-size:1rem;color:var(--accent2)">Exercices</div>';
+  l.exercises.forEach((ex,i) => { ep.innerHTML += buildEx(ex,i,idx,'les'); });
+  showPage('cours');
+}
+
+function closeLesson() {
+  document.getElementById('cours-list').style.display = 'block';
+  document.getElementById('lesson-view').classList.remove('active');
+}
+
+function buildEx(ex,i,li,prefix) {
+  const id = prefix+'-'+li+'-'+i;
+  return `<div class="ex-card" id="${id}"><div class="ex-header" onclick="toggleEx('${id}')"><div class="ex-header-left"><div class="ex-num">${i+1}</div><span class="ex-title">${ex.title}</span></div><div style="display:flex;align-items:center;gap:8px"><span class="badge ${ex.level}">${ex.level==='easy'?'Facile':ex.level==='medium'?'Moyen':'Difficile'}</span><span class="ex-toggle">▾</span></div></div><div class="ex-body"><div class="ex-question">${ex.question}</div><button class="show-answer-btn" onclick="toggleAnswer('ans-${id}',this)">👁 Voir le corrigé</button><div class="answer-block" id="ans-${id}"><div class="answer-label">✓ Corrigé</div>${ex.answer}</div></div></div>`;
+}
+
+function toggleEx(id) { document.getElementById(id).classList.toggle('open'); }
+function toggleAnswer(id,btn) {
+  const el = document.getElementById(id);
+  el.classList.toggle('visible');
+  btn.textContent = el.classList.contains('visible') ? '🙈 Masquer' : '👁 Voir le corrigé';
+}
+
+function renderAllExos(filter='all') {
+  const panel = document.getElementById('all-exercises');
+  panel.innerHTML = '';
+  let idx = 0;
+  lessons.forEach((l,li) => {
+    l.exercises.forEach((ex,ei) => {
+      if(filter!=='all' && ex.level!==filter) return;
+      panel.innerHTML += buildEx(ex, idx++, li, 'all');
+    });
+  });
+  if(!idx) panel.innerHTML = '<p style="color:var(--muted);padding:20px">Aucun exercice pour ce niveau.</p>';
+}
+
+function filterExos(level,btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllExos(level);
+}
+
+let qIdx=0, score=0, answered=false;
+
+function renderQuestion() {
+  const q = quizQuestions[qIdx];
+  document.getElementById('quiz-counter').textContent = (qIdx+1)+' / '+quizQuestions.length;
+  document.getElementById('quiz-progress').style.width = (((qIdx+1)/quizQuestions.length)*100)+'%';
+  document.getElementById('quiz-level-badge').innerHTML = '<span class="badge '+q.level+'">'+(q.level==='easy'?'Facile':q.level==='medium'?'Moyen':'Difficile')+'</span>';
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-options').innerHTML = q.opts.map((o,i)=>`<button class="quiz-option" onclick="answer(${i})" id="opt-${i}"><span class="option-letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('');
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-next').className = 'quiz-next-btn';
+  answered = false;
+}
+
+function answer(i) {
+  if(answered) return;
+  answered = true;
+  const q = quizQuestions[qIdx];
+  document.querySelectorAll('.quiz-option').forEach(o=>o.disabled=true);
+  const fb = document.getElementById('quiz-feedback');
+  if(i===q.ans) { score++; document.getElementById('opt-'+i).classList.add('correct'); fb.textContent='✓ Correct ! '+q.explain; fb.className='quiz-feedback correct visible'; }
+  else { document.getElementById('opt-'+i).classList.add('wrong'); document.getElementById('opt-'+q.ans).classList.add('correct'); fb.textContent='✗ Incorrect. '+q.explain; fb.className='quiz-feedback wrong visible'; }
+  const nb = document.getElementById('quiz-next');
+  nb.textContent = qIdx < quizQuestions.length-1 ? 'Question suivante →' : 'Voir mon résultat';
+  nb.className = 'quiz-next-btn visible';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if(qIdx >= quizQuestions.length) showResult();
+  else renderQuestion();
+}
+
+function showResult() {
+  document.getElementById('quiz-main').style.display='none';
+  document.getElementById('quiz-result').className='quiz-result visible';
+  document.getElementById('result-score').textContent=score+'/'+quizQuestions.length;
+  const p = score/quizQuestions.length;
+  document.getElementById('result-msg').textContent = p===1?'🏆 Parfait !':p>=0.7?'👏 Très bien !':p>=0.5?'💪 Continue à pratiquer !':'📚 Revois les cours, tu vas y arriver !';
+}
+
+function restartQuiz() {
+  qIdx=0; score=0;
+  document.getElementById('quiz-main').style.display='block';
+  document.getElementById('quiz-result').className='quiz-result';
+  renderQuestion();
+}
+
+renderAllExos();
+renderQuestion();
+</script>
+
+</body>
+</html>
